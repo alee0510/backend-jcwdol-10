@@ -1,6 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
+import fs from "fs";
+import { uuid } from "uuidv4";
 
 // @config dotenv
 dotenv.config();
@@ -11,56 +13,52 @@ const app = express();
 // @use body-parser
 app.use(bodyParser.json())
 
-// @resource
-const database = [
-    {
-        id: 1,
-        name: "John Doe",
-        birtdate : "1990-01-01",
-        gender : "male"
-    }
-]
-
-// @create a route
-app.get("/", (req, res) => {
-    res.status(200).send("<h1>Express server is running</h1>")
-})
-
-// @handler basic CRUD for database, with base route /api/users
+// @get users
 app.get("/api/users", (req, res) => {
-    res.status(200).json(database)
+    try {
+        // @read users from json file
+        const users = JSON.parse(fs.readFileSync("users.json", "utf-8"));
+
+        // @send users
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
+    }
 })
 
+// @create user
 app.post("/api/users", (req, res) => {
-    const body = req.body
+    try {
+        // @request body
+        const body = req.body
 
-    // @create user
-    database.push({...body, id: database.length + 1})
+        // @read users from json file
+        const users = JSON.parse(fs.readFileSync("users.json", "utf-8"));
 
-    // @send response to client
-    res.status(201).json(database)
+        // @add new user to users
+        const newUser = {
+            id : users.length + 1,
+            uuid : uuid(),
+            role : "user",
+            ...body
+        }
+        users.push(newUser);
+
+        // @write users to json file
+        fs.writeFileSync("users.json", JSON.stringify(users, null, 4));
+
+        // @send response to client
+        res.status(201).json({ message: "User created successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
+    }
 })
 
-app.put("/api/users/:id", (req, res) => {
-    const body = req.body
-    const id = req.params.id
-
-    // @update user
-    database[id - 1] = {...body, id: id}
-
-    // @send response to client
-    res.status(200).json(database)
-})
-
-app.delete("/api/users/:id", (req, res) => {
-    const id = req.params.id
-
-    // @delete user
-    database.splice(id - 1, 1)
-
-    // @send response to client
-    res.status(200).json(database)
-})
+// TODO : GET api/users/:uuid 
+// TODO : PUT api/users/:uuid
+// TODO : DELETE api/users/:uuid
 
 // @listen to port
 const PORT = process.env.PORT

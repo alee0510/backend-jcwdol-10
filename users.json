@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "uuid": "uuid01iddaiouiwmfwkmjakhvius",
+        "name": "Admin",
+        "email": "admin123@gmail.com",
+        "role": "admin"
+    },
+    {
+        "id": 2,
+        "uuid": "d5da671c-0529-4e17-8065-20ea88217d2a",
+        "role": "user",
+        "name": "lollipop",
+        "email": "lollipop@gmail.com"
+    }
+]
