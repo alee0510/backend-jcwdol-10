@@ -1,0 +1,16 @@
+{
+  "name": "backend-jcwdol-10",
+  "version": "1.0.0",
+  "description": "practice REST API",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "alee0510",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
