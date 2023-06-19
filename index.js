@@ -1,99 +1,67 @@
-// @import moduel
-// const http = require("http")
-import http from "http"
+import express from "express";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
 
-// @database
+// @config dotenv
+dotenv.config();
+
+// @create express app
+const app = express();
+
+// @use body-parser
+app.use(bodyParser.json())
+
+// @resource
 const database = [
     {
         id: 1,
-        name: "John",
-        birthday: "1990-01-01",
-        email: "john@gmail.com"
+        name: "John Doe",
+        birtdate : "1990-01-01",
+        gender : "male"
     }
 ]
 
-// @request url
-// GET : http://localhost:2000/ -> "Welcome to my REST_API."
-// GET : http://localhost:2000/api/users -> database
-// POST : http://localhost:2000/api/users -> create user
-// PUT : http://localhost:2000/api/users/1 -> update user
-// DELETE : http://localhost:2000/api/users/1 -> delete user
-
-// @HTTP Method
-// GET : Read
-// POST : Create
-// PUT/PATCH : Update
-// DELETE : Delete
-
-// @createServer
-const server = http.createServer((req, res) => {
-    // console.log("Request received.", req.url, req.method, req.headers)
-    if (req.url === "/" && req.method === "GET") {
-        res.writeHead(200, { "Content-Type": "text/html" })
-        res.end("Welcome to my REST_API.")
-    }
-
-    // @get users
-    if (req.url === "/api/users" && req.method === "GET") {
-        res.writeHead(200, { "Content-Type": "application/json" })
-        res.end(JSON.stringify(database))
-    }
-
-    // @create user
-    if (req.url === "/api/users" && req.method === "POST") {
-        let body = ""
-        req.on("data", (chunk) => {
-            body += chunk.toString()
-        })
-        req.on("end", () => {
-            const { name, birthday, email } = JSON.parse(body)
-            database.push({
-                id: database.length + 1,
-                name,
-                birthday,
-                email
-            })
-
-            // @create client
-            res.writeHead(201, { "Content-Type": "application/json" })
-            res.end(JSON.stringify(database))
-        })
-    }
-
-    // @update user
-    if (req.url.match(/\/api\/users\/([0-9]+)/) && req.method === "PUT") {
-        const id = req.url.split("/")[3]
-        let body = ""
-        req.on("data", (chunk) => {
-            body += chunk.toString()
-        })
-        req.on("end", () => {
-            const { name, birthday, email } = JSON.parse(body)
-            database[id - 1] = {
-                id: Number(id),
-                name,
-                birthday,
-                email
-            }
-
-            // @update client
-            res.writeHead(200, { "Content-Type": "application/json" })
-            res.end(JSON.stringify(database))
-        })
-    }
-
-    // @delete user
-    if (req.url.match(/\/api\/users\/([0-9]+)/) && req.method === "DELETE") {
-        const id = req.url.split("/")[3]
-        database.splice(id - 1, 1)
-
-        // @send response to client
-        res.writeHead(200, { "Content-Type": "application/json" })
-        res.end(JSON.stringify(database))
-    }
-    
+// @create a route
+app.get("/", (req, res) => {
+    res.status(200).send("<h1>Express server is running</h1>")
 })
 
-// @listen
-const PORT = 2000
-server.listen(PORT, () => console.log(`Server is running on port ${PORT}.`))
+// @handler basic CRUD for database, with base route /api/users
+app.get("/api/users", (req, res) => {
+    res.status(200).json(database)
+})
+
+app.post("/api/users", (req, res) => {
+    const body = req.body
+
+    // @create user
+    database.push({...body, id: database.length + 1})
+
+    // @send response to client
+    res.status(201).json(database)
+})
+
+app.put("/api/users/:id", (req, res) => {
+    const body = req.body
+    const id = req.params.id
+
+    // @update user
+    database[id - 1] = {...body, id: id}
+
+    // @send response to client
+    res.status(200).json(database)
+})
+
+app.delete("/api/users/:id", (req, res) => {
+    const id = req.params.id
+
+    // @delete user
+    database.splice(id - 1, 1)
+
+    // @send response to client
+    res.status(200).json(database)
+})
+
+// @listen to port
+const PORT = process.env.PORT
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
