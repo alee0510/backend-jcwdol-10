@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import fs from "fs";
 import { uuid } from "uuidv4"
 import requestLogger from "./src/middleware/logger.js"
-import apiKeyValidator from "./src/middleware/api.key.validator.js"
 
 // @config dotenv
 dotenv.config();
@@ -16,38 +15,36 @@ const app = express();
 app.use(bodyParser.json())
 app.use(requestLogger)
 
-// @get users
-app.get("/api/users", apiKeyValidator, (req, res) => {
-    try {
-        // @read users from json file
-        const users = JSON.parse(fs.readFileSync("./json/users.json", "utf-8"));
-
-        // @send users
-        res.status(200).json(users);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server Error" });
+// @create data model
+class Expense {
+    id = uuid()
+    date = new Date().toISOString()
+    constructor(_title, _amount, _category) {
+        this.title = _title;
+        this.amount = _amount;
+        this.category = _category;
     }
-})
+}
 
-// @request api key
-app.post("/api/request-api-key", (req, res) => {
+// @create expense data
+app.post("/api/expense", (req, res) => {
     try {
-        // @generate api key with uuid
-        const apiKey = uuid();
+        const expense = new Expense(req.body?.title, req.body?.amount, req.body?.category)
 
-        // @read api keys from json file
-        const apiKeys = JSON.parse(fs.readFileSync("./json/api.keys.json", "utf-8"));
+        // @read expense data from JSON
+        const prevExpenseData = JSON.parse(fs.readFileSync("./json/expense.json", "utf-8"));
+    
+        // @push new expense data into JSON
+        prevExpenseData.push(expense)
 
-        // @save apiKey data
-        apiKeys.push({ key : apiKey, name : req.body.name, email : req.body.email });
-        fs.writeFileSync("./json/api.keys.json", JSON.stringify(apiKeys, null, 4));
+        // @create expense data into JSON
+        const newExpenseData = JSON.stringify(prevExpenseData, null, 4);
+        fs.writeFileSync("./json/expense.json", newExpenseData)
 
-        // @send apiKey
-        res.status(200).json({ key : apiKey });
+        res.status(201).json({ message: "Expense created successfully" })
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server Error" });
+        console.log(error);
+        res.status(500).json({ message: "Server Error" })
     }
 })
 
