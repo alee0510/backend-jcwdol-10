@@ -18,18 +18,32 @@ app.use(requestLogger)
 // @create data model
 class Expense {
     id = uuid()
-    date = new Date().toISOString()
-    constructor(_title, _amount, _category) {
-        this.title = _title;
-        this.amount = _amount;
+    date = new Date().toISOString().slice(0, 10)
+    constructor(
+        _category, 
+        _description,
+        _amount, 
+        _currency = "USD",
+        _payment_method = "Cash",
+    ) {
         this.category = _category;
+        this.description = _description;
+        this.amount = _amount;
+        this.currency = _currency;
+        this.payment_method = _payment_method;
     }
 }
 
 // @create expense data
 app.post("/api/expense", (req, res) => {
     try {
-        const expense = new Expense(req.body?.title, req.body?.amount, req.body?.category)
+        const expense = new Expense(
+            req.body?.category,
+            req.body?.description,
+            req.body?.amount,
+            req.body?.currency,
+            req.body?.payment_method
+        )
 
         // @read expense data from JSON
         const prevExpenseData = JSON.parse(fs.readFileSync("./json/expense.json", "utf-8"));
@@ -47,6 +61,9 @@ app.post("/api/expense", (req, res) => {
         res.status(500).json({ message: "Server Error" })
     }
 })
+
+// @TODO: get all expense data
+// @TODO : get expense data by id
 
 
 // @listen to port
