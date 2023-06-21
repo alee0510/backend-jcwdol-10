@@ -1,4 +1,5 @@
 import { Router } from "express";
+import expenseValidator from "../middleware/expense.validator.js";
 
 // @create router
 const router = Router();
@@ -7,9 +8,11 @@ const router = Router();
 import * as ExpenseControllers from "../controllers/index.js";
 
 // @define routes
-router.post("/expense", ExpenseControllers.createExpense);
+router.post("/expense", expenseValidator, ExpenseControllers.createExpense);
 router.get("/expense", ExpenseControllers.getAllExpense);
 router.get("/expense/:id", ExpenseControllers.getExpenseById);
+router.patch("/expense/:id", ExpenseControllers.updateExpenseById);
+router.delete("/expense/:id", ExpenseControllers.deleteExpenseById);
 
 // @export router
 export default router;

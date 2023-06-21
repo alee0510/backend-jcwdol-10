@@ -1,93 +1,83 @@
 [
     {
-      "id": "6a4a7c38-57b0-4a29-938c-1cc78e5d7a17",
-      "date": "2023-06-20",
-      "category": "Travel",
-      "description": "Flight ticket",
-      "amount": 500.00,
-      "currency": "USD",
-      "payment_method": "Credit Card"
+        "id": "6a4a7c38-57b0-4a29-938c-1cc78e5d7a17",
+        "date": "2023-06-20",
+        "category": "Travel",
+        "description": "Flight ticket",
+        "amount": 500,
+        "currency": "USD",
+        "payment_method": "Credit Card"
     },
     {
-      "id": "ad128f0c-c2f1-4217-a26b-781a48346429",
-      "date": "2023-06-19",
-      "category": "Food",
-      "description": "Dinner at a restaurant",
-      "amount": 75.50,
-      "currency": "USD",
-      "payment_method": "Debit Card"
+        "id": "ad128f0c-c2f1-4217-a26b-781a48346429",
+        "date": "2023-06-19",
+        "category": "Food",
+        "description": "Dinner at a restaurant",
+        "amount": 75.5,
+        "currency": "USD",
+        "payment_method": "Debit Card"
     },
     {
-      "id": "f38d979f-69ed-4a96-b8d4-8d0dbf41be14",
-      "date": "2023-06-18",
-      "category": "Shopping",
-      "description": "New pair of shoes",
-      "amount": 120.00,
-      "currency": "USD",
-      "payment_method": "Credit Card"
+        "id": "7e749c50-22fd-47ae-9bbd-2f493823d7a9",
+        "date": "2023-06-17",
+        "category": "Entertainment",
+        "description": "Movie tickets",
+        "amount": 25,
+        "currency": "USD",
+        "payment_method": "Cash"
     },
     {
-      "id": "7e749c50-22fd-47ae-9bbd-2f493823d7a9",
-      "date": "2023-06-17",
-      "category": "Entertainment",
-      "description": "Movie tickets",
-      "amount": 25.00,
-      "currency": "USD",
-      "payment_method": "Cash"
+        "id": "c12d4ec5-cd2f-44e0-8486-9420eac5f7b9",
+        "date": "2023-06-16",
+        "category": "Travel",
+        "description": "Hotel stay",
+        "amount": 200,
+        "currency": "USD",
+        "payment_method": "Credit Card"
     },
     {
-      "id": "c12d4ec5-cd2f-44e0-8486-9420eac5f7b9",
-      "date": "2023-06-16",
-      "category": "Travel",
-      "description": "Hotel stay",
-      "amount": 200.00,
-      "currency": "USD",
-      "payment_method": "Credit Card"
+        "id": "9e6fb91c-926f-4b2e-9262-ccdf6dd8b4e4",
+        "date": "2023-06-15",
+        "category": "Food",
+        "description": "Lunch at a cafe",
+        "amount": 20,
+        "currency": "USD",
+        "payment_method": "Cash"
     },
     {
-      "id": "9e6fb91c-926f-4b2e-9262-ccdf6dd8b4e4",
-      "date": "2023-06-15",
-      "category": "Food",
-      "description": "Lunch at a cafe",
-      "amount": 20.00,
-      "currency": "USD",
-      "payment_method": "Cash"
+        "id": "f684d898-47f6-4c85-9e6b-7b5b26db6bb2",
+        "date": "2023-06-14",
+        "category": "Shopping",
+        "description": "Electronics purchase",
+        "amount": 600,
+        "currency": "USD",
+        "payment_method": "Credit Card"
     },
     {
-      "id": "f684d898-47f6-4c85-9e6b-7b5b26db6bb2",
-      "date": "2023-06-14",
-      "category": "Shopping",
-      "description": "Electronics purchase",
-      "amount": 600.00,
-      "currency": "USD",
-      "payment_method": "Credit Card"
+        "id": "e9e78e2e-6823-4a02-bbdb-cc9c282b09c7",
+        "date": "2023-06-13",
+        "category": "Entertainment",
+        "description": "Concert tickets",
+        "amount": 100,
+        "currency": "USD",
+        "payment_method": "Debit Card"
     },
     {
-      "id": "e9e78e2e-6823-4a02-bbdb-cc9c282b09c7",
-      "date": "2023-06-13",
-      "category": "Entertainment",
-      "description": "Concert tickets",
-      "amount": 100.00,
-      "currency": "USD",
-      "payment_method": "Debit Card"
+        "id": "9f1cabe7-03f6-47de-bdc0-65a9aef819f9",
+        "date": "2023-06-12",
+        "category": "Travel",
+        "description": "Taxi fare",
+        "amount": 30,
+        "currency": "USD",
+        "payment_method": "Cash"
     },
     {
-      "id": "9f1cabe7-03f6-47de-bdc0-65a9aef819f9",
-      "date": "2023-06-12",
-      "category": "Travel",
-      "description": "Taxi fare",
-      "amount": 30.00,
-      "currency": "USD",
-      "payment_method": "Cash"
-    },
-    {
-      "id": "3453fbc7-60a7-42a7-a3c3-af65f3c8755f",
-      "date": "2023-06-11",
-      "category": "Food",
-      "description": "Dinner at a fancy restaurant",
-      "amount": 150.00,
-      "currency": "USD",
-      "payment_method": "Credit Card"
+        "id": "3453fbc7-60a7-42a7-a3c3-af65f3c8755f",
+        "date": "2023-06-11",
+        "category": "Food",
+        "description": "Dinner at a fancy restaurant",
+        "amount": 150,
+        "currency": "USD",
+        "payment_method": "Credit Card"
     }
-  ]
-  
+]
