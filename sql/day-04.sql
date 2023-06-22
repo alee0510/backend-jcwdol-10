@@ -76,6 +76,14 @@ SELECT * FROM users;
 SELECT * FROM users LIMIT 10;
 
 -- GET 20 DATA USERS WITH ID MORE THAN 20, KOTA PALEMBANA, DENPASAR, KEDIRI, AND THE NAME START WITH "b"
+SELECT * FROM users WHERE id >= 20 AND city IN ("palembang", "denpasar", "kediri") AND name LIKE "%b" LIMIT 20;
+
+-- GROUP BY DATA AND Aggregate Functions (COUNT, MAX, MIN, AVG, AND SUM)
+SELECT * FROM users;
+SELECT COUNT(name) as total_user, city FROM users GROUP BY city;
+SELECT COUNT(*) as total FROM users;
+SELECT SUM(id) as sum_id FROM users;
+
 
 
 
