@@ -83,12 +83,3 @@ SELECT * FROM users;
 SELECT COUNT(name) as total_user, city FROM users GROUP BY city;
 SELECT COUNT(*) as total FROM users;
 SELECT SUM(id) as sum_id FROM users;
-
-
-
-
-
-
-
-
-
