@@ -1,7 +1,12 @@
-import express from "express";
-import bodyParser from "body-parser";
-import dotenv from "dotenv";
-import requestLogger from "./src/middleware/logger.js"
+// import express from "express";
+// import bodyParser from "body-parser";
+// import dotenv from "dotenv";
+// import requestLogger from "./src/middleware/logger.js"
+
+const express = require("express");
+const bodyParser = require("body-parser");
+const dotenv = require("dotenv");
+// const requestLogger = require("./src/middleware/logger.js")
 
 // @config dotenv
 dotenv.config();
@@ -11,14 +16,14 @@ const app = express();
 
 // @use body-parser
 app.use(bodyParser.json())
-app.use(requestLogger)
+// app.use(requestLogger)
 
 // @connect to database
-import connection from "./src/config/index.js";
-connection.connect((err) => {
-    if (err) return console.error(err);
-    console.log("Database connected");
-})
+// const connection = require("./src/models/index.js");
+// connection.connect((err) => {
+//     if (err) return console.error(err);
+//     console.log("Database connected");
+// })
 
 // @root route
 app.get("/", (req, res) => {
@@ -26,11 +31,17 @@ app.get("/", (req, res) => {
 })
 
 // @use router
-import ExpenseRoutes from "./src/routers/index.js";
-import UserRoutes from "./src/routers/users.js";
+// import ExpenseRoutes from "./src/routers/index.js";
+// import UserRoutes from "./src/routers/users.js";
+// import CustomerRoutes from "./src/routers/customer.js"
 
-app.use("/api", ExpenseRoutes);
-app.use("/api", UserRoutes);
+// const ExpenseRoutes = require("./src/routers/index.js");
+// const UserRoutes = require("./src/routers/users.js");
+const CustomerRoutes = require("./src/routers/customer.js")
+
+// app.use("/api", ExpenseRoutes);
+// app.use("/api", UserRoutes);
+app.use("/api", CustomerRoutes);
 
 // @listen to port
 const PORT = process.env.PORT

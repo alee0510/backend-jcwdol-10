@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "practice REST API",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
@@ -17,7 +17,11 @@
     "express": "^4.18.2",
     "moment": "^2.29.4",
     "mysql2": "^3.4.0",
+    "sequelize": "^6.32.1",
     "uuidv4": "^6.2.13",
     "yup": "^1.2.0"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.6.1"
   }
 }
