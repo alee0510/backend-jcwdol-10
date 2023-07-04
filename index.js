@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
+import cors from "cors";
 import requestLogger from "./src/middleware/logger.js"
 
 // @config dotenv
@@ -11,6 +12,7 @@ const app = express();
 
 // @use body-parser
 app.use(bodyParser.json())
+app.use(cors({ exposedHeaders : "Authorization" }))
 app.use(requestLogger)
 
 // @root route
@@ -19,6 +21,8 @@ app.get("/", (req, res) => {
 })
 
 // @use router
+import AuthRouters from "./src/controllers/authentication/routers.js"
+app.use("/api/auth", AuthRouters)
 
 
 // @listen to port
