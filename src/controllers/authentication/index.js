@@ -53,11 +53,11 @@ export const login = async (req, res) => {
         await LoginValidationSchema.validate(req.body);
 
         // @check if username is email
-        // const isAnEmail = await IsEmail(username);
-        // const query = isAnEmail ? { email : username } : { username };
+        const isAnEmail = await IsEmail(username);
+        const query = isAnEmail ? { email : username } : { username };
 
         // @check if user exists
-        const userExists = await User?.findOne({ where: { username } });
+        const userExists = await User?.findOne({ where: query });
         if (!userExists) return res.status(400).json({ message: "User does not exists" });
 
         // @check if password is correct

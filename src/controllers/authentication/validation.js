@@ -17,6 +17,6 @@ export const EmailValidationSchema = Yup.object({
 })
 
 export const IsEmail = async (email) => {
-    return await EmailValidationSchema.validate({ email })
+    return await EmailValidationSchema.isValid({ email })
 }
 
