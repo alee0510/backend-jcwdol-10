@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 import requestLogger from "./src/middleware/logger.js"
+import errorHandler from "./src/middleware/error.handler.js";
 
 // @config dotenv
 dotenv.config();
@@ -24,6 +25,8 @@ app.get("/", (req, res) => {
 import AuthRouters from "./src/controllers/authentication/routers.js"
 app.use("/api/auth", AuthRouters)
 
+// @global error handler
+app.use(errorHandler)
 
 // @listen to port
 const PORT = process.env.PORT

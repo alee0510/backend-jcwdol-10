@@ -1,6 +1,5 @@
 import { Router } from "express"
-import verifyJWTToken from "../../middleware/token.verify.js"
-
+import { verifyUser } from "../../middleware/token.verify.js"
 // @import the controller
 import * as AuthControllers from "./index.js"
 
@@ -8,6 +7,7 @@ import * as AuthControllers from "./index.js"
 const router = Router()
 router.post("/register", AuthControllers.register)
 router.post("/login", AuthControllers.login)
-router.get("/users", verifyJWTToken, AuthControllers.getUsers)
+router.get("/verify/:token", AuthControllers.verify)
+router.delete("/account", verifyUser, AuthControllers.deleteAccount)
 
 export default router
