@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // @create db configuration
-export default {
+const db_config = {
     development: {
         username: process.env.DB_USER,
         password: process.env.DB_PASS,
@@ -25,4 +25,8 @@ export default {
         dialect: "mysql"
     }
 }
+
+// @export all envirotnment variable
+export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
   
+export default db_config[process.env.NODE_ENV || 'development']
