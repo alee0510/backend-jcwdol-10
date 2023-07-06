@@ -26,5 +26,3 @@ export async function verifyAdmin(req, res, next) {
         return res.status(403).json({ message : error?.message  })
     }
 }
-
-export default verifyUser

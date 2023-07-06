@@ -1,6 +1,6 @@
 import fs from "fs";
 
-function apiKeyValidator (req, res, next) {
+export function apiKeyValidator (req, res, next) {
     // @get api key from headers
     const apiKey = req.headers["x-api-key"]
 
@@ -18,5 +18,3 @@ function apiKeyValidator (req, res, next) {
     // @if api key is valid
     next()
 }
-
-export default apiKeyValidator

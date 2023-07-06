@@ -2,8 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import cors from "cors";
-import requestLogger from "./src/middleware/logger.js"
-import errorHandler from "./src/middleware/error.handler.js";
+import * as middleware from "./src/middlewares/index.js";
 
 // @config dotenv
 dotenv.config();
@@ -14,7 +13,10 @@ const app = express();
 // @use body-parser
 app.use(bodyParser.json())
 app.use(cors({ exposedHeaders : "Authorization" }))
-app.use(requestLogger)
+app.use(middleware.requestLogger)
+
+// @expose public folder
+app.use("/public", express.static("public"))
 
 // @root route
 app.get("/", (req, res) => {
@@ -23,10 +25,12 @@ app.get("/", (req, res) => {
 
 // @use router
 import AuthRouters from "./src/controllers/authentication/routers.js"
+import ProfileRouters from "./src/controllers/profile/routers.js"
 app.use("/api/auth", AuthRouters)
+app.use("/api/user", ProfileRouters)
 
 // @global error handler
-app.use(errorHandler)
+app.use(middleware.errorHandler)
 
 // @listen to port
 const PORT = process.env.PORT

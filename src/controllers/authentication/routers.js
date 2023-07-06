@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { verifyUser } from "../../middleware/token.verify.js"
+import { verifyUser } from "../../middlewares/index.js"
 // @import the controller
 import * as AuthControllers from "./index.js"
 
