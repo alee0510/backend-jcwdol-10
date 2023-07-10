@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
 })
 
 // @use router
-import AuthRouters from "./src/controllers/authentication/routers.js"
+import AuthRouters from "./src/controllers/auth/routers.js"
 import ProfileRouters from "./src/controllers/profile/routers.js"
 app.use("/api/auth", AuthRouters)
 app.use("/api/user", ProfileRouters)
