@@ -31,6 +31,7 @@ export const register = async (req, res, next) => {
         // @generate otp token
         const otpToken = helpers.generateOtp();
 
+        // @archive user data
         const user = await User?.create({
             username,
             password : hashedPassword,
@@ -51,17 +52,17 @@ export const register = async (req, res, next) => {
         // @generate access token
         const accessToken = helpers.createToken({ uuid: user?.dataValues?.uuid, role : user?.dataValues?.role });
 
-        // @return response
+        // @send response
         res.header("Authorization", `Bearer ${accessToken}`)
             .status(200)
             .json({
-            message: "User created successfully",
-            user
-        });
+                message: "User created successfully",
+                user
+            });
 
         // @generate email message
         const template = fs.readFileSync(path.join(process.cwd(), "templates", "index.html"), "utf8");
-        const message  = handlebars.compile(template)({ otpToken, link : config.REDIRECT_URL + `/auth/verify/${user?.dataValues?.uuid}` })
+        const message  = handlebars.compile(template)({ otpToken, link : config.REDIRECT_URL + `/auth/verify/reg-${user?.dataValues?.uuid}` })
 
         //@send verification email
         const mailOptions = {
@@ -104,8 +105,8 @@ export const login = async (req, res, next) => {
         const userExists = await User?.findOne({ where: query, include : Profile });
         if (!userExists) throw ({ status : 400, message : error.USER_DOES_NOT_EXISTS })
 
-        // @check if user status is active (1), deleted (2), unverified (0)
-        if (userExists?.dataValues?.status === 2) throw ({ status : 400, message : error.USER_DOES_NOT_EXISTS });
+        // @check if user status is un-verified (1), verified (2), deleted (3)
+        if (userExists?.dataValues?.status === 3) throw ({ status : 400, message : error.USER_DOES_NOT_EXISTS });
 
         // @check if password is correct
         const isPasswordCorrect = helpers.comparePassword(password, userExists?.dataValues?.password);
@@ -157,12 +158,14 @@ export const keepLogin = async (req, res, next) => {
 export const verify = async (req, res, next) => {
     try {
         // @get token from params
-        const { uuid, token } = req.body;
-
-        // @check user data
-        const user = await User?.findOne({ where : { uuid : uuid } });
+        const { uuid, token } = req.body;    
+        
+        // @check context
+        const context = uuid.split("-")[0];
+        const userId = uuid.split("-")?.slice(1)?.join("-");
 
         // @check if user exists
+        const user = await User?.findOne({ where : { uuid : userId } });
         if (!user) throw ({ status : 400, message : error.USER_DOES_NOT_EXISTS });
 
         // @verify token
@@ -172,11 +175,14 @@ export const verify = async (req, res, next) => {
         const isExpired = moment().isAfter(user?.dataValues?.expiredOtp);
         if (isExpired) throw ({ status : 400, message : error.INVALID_CREDENTIALS });
 
-        // @update user status
-        await User?.update({ status : 1, otp : null, expiredOtp : null }, { where : { uuid : uuid } });
+        // @check context to do query action
+        if (context === "reg") {
+            // @update user status
+            await User?.update({ status : 2, otp : null, expiredOtp : null }, { where : { uuid : userId } });
+        }
 
         // @return response
-        res.status(200).json({ message : "Account verified successfully" })
+        res.status(200).json({ message : "Account verified successfully",  data : uuid })
     } catch (error) {
         next(error)
     }
@@ -185,8 +191,8 @@ export const verify = async (req, res, next) => {
 // @request otp token
 export const requestOtp = async (req, res, next) => {
     try {
-        // @get user email
-        const { email } = req.body;
+        // @get user email, context from body (reg or reset)
+        const { email, context } = req.body;
 
         // @check if user exists
         const user = await User?.findOne({ where : { email } });
@@ -196,11 +202,11 @@ export const requestOtp = async (req, res, next) => {
         const otpToken = helpers.generateOtp();
 
         // @update user otp token
-        await User?.update({ otp : otpToken, expiredOtp : moment().add(1, "days").format("YYYY-MM-DD HH:mm:ss") }, { where : { uuid } });
+        await User?.update({ otp : otpToken, expiredOtp : moment().add(1, "days").format("YYYY-MM-DD HH:mm:ss") }, { where : { email } });
 
         // @generate email message
         const template = fs.readFileSync(path.join(process.cwd(), "templates", "index.html"), "utf8");
-        const message  = handlebars.compile(template)({ otpToken, link : config.REDIRECT_URL + `/auth/verify/${user?.dataValues?.uuid}` })
+        const message  = handlebars.compile(template)({ otpToken, link : config.REDIRECT_URL + `/auth/verify/${context}-${user?.dataValues?.uuid}` })
 
         //@send verification email
         const mailOptions = {

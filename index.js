@@ -26,8 +26,10 @@ app.get("/", (req, res) => {
 // @use router
 import AuthRouters from "./src/controllers/auth/routers.js"
 import ProfileRouters from "./src/controllers/profile/routers.js"
+import TicketRouters from "./src/controllers/tickets/routers.js"
 app.use("/api/auth", AuthRouters)
 app.use("/api/user", ProfileRouters)
+app.use("/api/ticket", TicketRouters)
 
 // @global error handler
 app.use(middleware.errorHandler)
