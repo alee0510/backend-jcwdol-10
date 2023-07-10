@@ -7,7 +7,9 @@ import * as AuthControllers from "./index.js"
 const router = Router()
 router.post("/register", AuthControllers.register)
 router.post("/login", AuthControllers.login)
-router.get("/verify/:token", AuthControllers.verify)
+router.get("/verify", AuthControllers.verify)
+router.post("/request-otp", AuthControllers.requestOtp)
+router.get("/keep-login", verifyUser, AuthControllers.keepLogin)
 router.delete("/account", verifyUser, AuthControllers.deleteAccount)
 
 export default router

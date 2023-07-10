@@ -1,9 +1,14 @@
 import { ValidationError } from "yup"
+import handlebars from "handlebars"
+import fs from "fs"
+import path from "path"
+import moment from "moment"
+
 import * as config from "../../config/index.js"
 import * as helpers from "../../helpers/index.js"
 import * as error from "../../middlewares/error.handler.js"
-import { User, Profile } from "../../models/user.js"
-import db from "../../models/index.js"
+import { User, Profile } from "../../models/user.profile.js"
+import db from "../../database/index.js"
 import * as validation from "./validation.js"
 
 // @register process
@@ -22,21 +27,29 @@ export const register = async (req, res, next) => {
 
         // @create user -> encypt password
         const hashedPassword = helpers.hashPassword(password);
+
+        // @generate otp token
+        const otpToken = helpers.generateOtp();
+
         const user = await User?.create({
             username,
             password : hashedPassword,
             email,
-            phone
+            phone,
+            otp : otpToken,
+            expiredOtp : moment().add(1, "days").format("YYYY-MM-DD HH:mm:ss")
         });
 
         //@create profile 
         await Profile?.create({ userId : user?.dataValues?.id });
 
-        // @delete password from response
+        // @delete unused data from response
         delete user?.dataValues?.password;
+        delete user?.dataValues?.otp;
+        delete user?.dataValues?.expiredOtp;
 
         // @generate access token
-        const accessToken = helpers.createToken({ id: user?.dataValues?.id, role : user?.dataValues?.role });
+        const accessToken = helpers.createToken({ uuid: user?.dataValues?.uuid, role : user?.dataValues?.role });
 
         // @return response
         res.header("Authorization", `Bearer ${accessToken}`)
@@ -46,12 +59,16 @@ export const register = async (req, res, next) => {
             user
         });
 
+        // @generate email message
+        const template = fs.readFileSync(path.join(process.cwd(), "templates", "index.html"), "utf8");
+        const message  = handlebars.compile(template)({ otpToken, link : config.REDIRECT_URL + `/auth/verify/${user?.dataValues?.uuid}` })
+
         //@send verification email
         const mailOptions = {
             from: config.GMAIL,
             to: email,
             subject: "Verification",
-            html: `<h1>Click <a href="http://localhost:5000/api/auth/verify/${accessToken}">here</a> to verify your account</h1>`
+            html: message
         }
         helpers.transporter.sendMail(mailOptions, (error, info) => {
             if (error) throw error;
@@ -95,10 +112,12 @@ export const login = async (req, res, next) => {
         if (!isPasswordCorrect) throw ({ status : 400, message : error.INVALID_CREDENTIALS });
 
         // @generate access token
-        const accessToken = helpers.createToken({ id: userExists?.dataValues?.id, role : userExists?.dataValues?.role });
+        const accessToken = helpers.createToken({ uuid: userExists?.dataValues?.uuid, role : userExists?.dataValues?.role });
 
         // @delete password from response
         delete userExists?.dataValues?.password;
+        delete userExists?.dataValues?.otp;
+        delete userExists?.dataValues?.expiredOtp;
 
         // @return response
         res.header("Authorization", `Bearer ${accessToken}`)
@@ -113,20 +132,90 @@ export const login = async (req, res, next) => {
     }
 }
 
+// @keeplogin
+export const keepLogin = async (req, res, next) => {
+    try {
+        // @get user id from token
+        const { uuid } = req.user;
+
+        // @get user data
+        const user = await User?.findOne({ where : { uuid }, include : Profile });
+
+        // @delete password from response
+        delete user?.dataValues?.password;
+        delete user?.dataValues?.otp;
+        delete user?.dataValues?.expiredOtp;
+
+        // @return response
+        res.status(200).json({ user })
+    } catch (error) {
+        next(error)
+    }
+}
+
 // @verify account
 export const verify = async (req, res, next) => {
     try {
         // @get token from params
-        const { token } = req.params;
+        const { uuid, token } = req.body;
+
+        // @check user data
+        const user = await User?.findOne({ where : { uuid : uuid } });
+
+        // @check if user exists
+        if (!user) throw ({ status : 400, message : error.USER_DOES_NOT_EXISTS });
 
         // @verify token
-        const decodedToken = helpers.verifyToken(token);
+        if (token !== user?.dataValues?.otp) throw ({ status : 400, message : error.INVALID_CREDENTIALS });
+
+        // @check if token is expired
+        const isExpired = moment().isAfter(user?.dataValues?.expiredOtp);
+        if (isExpired) throw ({ status : 400, message : error.INVALID_CREDENTIALS });
 
         // @update user status
-        await User?.update({ status : 1 }, { where : { id : decodedToken?.id } });
+        await User?.update({ status : 1, otp : null, expiredOtp : null }, { where : { uuid : uuid } });
 
         // @return response
         res.status(200).json({ message : "Account verified successfully" })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// @request otp token
+export const requestOtp = async (req, res, next) => {
+    try {
+        // @get user email
+        const { email } = req.body;
+
+        // @check if user exists
+        const user = await User?.findOne({ where : { email } });
+        if (!user) throw ({ status : 400, message : error.USER_DOES_NOT_EXISTS });
+
+        // @generate otp token
+        const otpToken = helpers.generateOtp();
+
+        // @update user otp token
+        await User?.update({ otp : otpToken, expiredOtp : moment().add(1, "days").format("YYYY-MM-DD HH:mm:ss") }, { where : { uuid } });
+
+        // @generate email message
+        const template = fs.readFileSync(path.join(process.cwd(), "templates", "index.html"), "utf8");
+        const message  = handlebars.compile(template)({ otpToken, link : config.REDIRECT_URL + `/auth/verify/${user?.dataValues?.uuid}` })
+
+        //@send verification email
+        const mailOptions = {
+            from: config.GMAIL,
+            to: email,
+            subject: "Verification",
+            html: message
+        }
+        helpers.transporter.sendMail(mailOptions, (error, info) => {
+            if (error) throw error;
+            console.log("Email sent: " + info.response);
+        })
+
+        // @return response
+        res.status(200).json({ message : "Otp token requested successfully" })
     } catch (error) {
         next(error)
     }
@@ -136,10 +225,10 @@ export const verify = async (req, res, next) => {
 export const deleteAccount = async (req, res, next) => {
     try {
         // @get user id from token
-        const { id } = req.user;
+        const { uuid } = req.user;
 
         // @delete user
-        await User?.update({ status : 2 }, { where : { id } });
+        await User?.update({ status : 2 }, { where : { uuid } });
 
         // @return response
         res.status(200).json({ message : "Account deleted successfully" })
@@ -147,5 +236,3 @@ export const deleteAccount = async (req, res, next) => {
         next(error)
     }
 }
-
-// TODO : activate account

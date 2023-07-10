@@ -1,4 +1,4 @@
-import db from "./index.js";
+import db from "../database/index.js"
 
 // @create user model
 export const User = db.sequelize.define("users", {
@@ -38,40 +38,13 @@ export const User = db.sequelize.define("users", {
         type : db.Sequelize.INTEGER,
         allowNull : false,
         defaultValue : 0
-    }
-})
-
-// @profile
-export const Profile = db.sequelize.define("profiles", {
-    id: {
-        type: db.Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
     },
-    userId : {
-        type : db.Sequelize.INTEGER,
-        allowNull : false
-    },
-    genderId : {
-        type : db.Sequelize.INTEGER,
-    },
-    image : {
+    otp : {
         type : db.Sequelize.STRING,
     },
-    birthdate : {
+    expiredOtp : {
         type : db.Sequelize.DATE,
     },
-    address : {
-        type : db.Sequelize.STRING,
-    },
-    city : {
-        type : db.Sequelize.STRING,
-    },
-    country : {
-        type : db.Sequelize.STRING,
-    }
-}, {
-    timestamps : false
 })
 
 // @status
@@ -115,7 +88,3 @@ export const Role = db.sequelize.define("roles", {
 }, {
     timestamps : false
 })
-
-// @define relation
-User.hasOne(Profile, { foreignKey : "userId" })
-Profile.belongsTo(User, { foreignKey : "userId" })

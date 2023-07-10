@@ -1,5 +1,4 @@
 import { Router } from "express"
-import path from "path"
 import { verifyUser } from "../../middlewares/token.verify.js"
 import { createUploader, createCloudinaryStorage } from "../../helpers/uploader.js"
 

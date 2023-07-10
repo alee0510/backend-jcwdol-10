@@ -34,5 +34,6 @@ export const OTP_SECRET_KEY = process.env.OTP_SECRET_KEY
 export const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME
 export const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY
 export const CLOUDINARY_API_SECRET = process.env.CLOUDYNARY_API_SECRET
+export const REDIRECT_URL = process.env.REDIRECT_URL
   
 export default db_config[process.env.NODE_ENV || 'development']

@@ -1,4 +1,4 @@
-import { Profile } from "../../models/user.js";
+import { Profile } from "../../models/user.profile.js";
 
 // @upload image
 export const uploadImage = async (req, res, next) => {
