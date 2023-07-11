@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 
 // @use body-parser
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 app.use(cors({ exposedHeaders : "Authorization" }))
 app.use(middleware.requestLogger)
 

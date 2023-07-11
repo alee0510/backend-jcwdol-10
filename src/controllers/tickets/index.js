@@ -110,6 +110,34 @@ export const getTicketById = async (req, res, next) => {
     }
 }
 
+//@ create ticket with poster
+export const createTicketWithPoster = async (req, res, next) => {
+    try {
+        const { data } = req.body;
+        const body = JSON.parse(data);
+        const { title, description, date, location, price, stock } = body
+
+        // @validate request body
+        await TicketValidationSchema.validate(body);
+
+        // @check if ticket exists
+        const ticketExists = await Ticket?.findOne({ where : { title } });
+        if (ticketExists) throw ({ status : 400, message : "Ticket already exists" });
+        
+        // @archive ticket's data
+        const ticket = await Ticket?.create({ title, description, date, location, price, stock, poster : req?.file?.path });
+
+        // @send response
+        res.status(201).json({ type: "success", message: "Ticket created", data: ticket });
+    } catch (error) {
+        // @check if error from validation
+        if (error instanceof ValidationError) {
+            return next({ status: 400, message: error?.errors?.[0] })
+        }
+        next(error)
+    }
+}
+
 // @update ticket by id
 // @update ticket's status
 // @delete ticket by id
