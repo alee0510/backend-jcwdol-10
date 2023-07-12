@@ -1,21 +1,7 @@
-FROM node:16.20.1-alpine3.17
-WORKDIR /app
-COPY package.json .
+FROM node:lts-alpine
+WORKDIR /user/app
+COPY package*.json .
 RUN npm install
 COPY . .
 EXPOSE 5000
-ENV PORT 5000
-ENV DB_HOST 127.0.0.1
-ENV DB_PORT 3306
-ENV DB_NAME jcwdol
-ENV DB_USER root
-ENV DB_PASS alee0510
-ENV JWT_SECRET_KEY 768c73fb9dd038b221a85513c80f19f29f1ecb7de98a7e4b743307fc35ce44e2
-ENV OTP_SECRET_KEY 4241d10022c6bfbfcdefba7dc3a76c7b5cfcf34cf3ae4ad6934dcf235ea517d9
-ENV GMAIL_APP_KEY wakaeyezsozdnrex
-ENV GMAIL ali.muksin0510@gmail.com
-ENV CLOUDINARY_CLOUD_NAME dftmzpefb
-ENV CLOUDINARY_API_KEY 138186632335839
-ENV CLOUDYNARY_API_SECRET qJZuF5aFVXT-9N09EQ4GzEfjF4I
-ENV REDIRECT_URL http://localhost:3000
-CMD ["npm", "start"]
+CMD [ "node", "index.js" ]
