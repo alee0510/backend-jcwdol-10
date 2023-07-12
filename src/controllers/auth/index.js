@@ -11,6 +11,8 @@ import { User, Profile } from "../../models/user.profile.js"
 import db from "../../database/index.js"
 import * as validation from "./validation.js"
 
+const cache = new Map()
+
 // @register process
 export const register = async (req, res, next) => {
     try {
@@ -112,8 +114,18 @@ export const login = async (req, res, next) => {
         const isPasswordCorrect = helpers.comparePassword(password, userExists?.dataValues?.password);
         if (!isPasswordCorrect) throw ({ status : 400, message : error.INVALID_CREDENTIALS });
 
-        // @generate access token
-        const accessToken = helpers.createToken({ uuid: userExists?.dataValues?.uuid, role : userExists?.dataValues?.role });
+        // @check token in chache
+        const cachedToken = cache.get(userExists?.dataValues?.uuid)
+        const isValid = cachedToken && helpers.verifyToken(cachedToken)
+        let accessToken = null
+        if (cachedToken && isValid) {
+            accessToken = cachedToken
+        } else {
+            // @generate access token
+            accessToken = helpers.createToken({ uuid: userExists?.dataValues?.uuid, role : userExists?.dataValues?.role });
+            cache.set(userExists?.dataValues?.uuid, accessToken)
+        }
+
 
         // @delete password from response
         delete userExists?.dataValues?.password;

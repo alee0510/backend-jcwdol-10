@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # restart: on-failure
+    container_name: myapi
+    volumes:
+      - .:/user/app
+      - /user/app/node_modules
+    depends_on:
+      - database
+    env_file:
+      - .env
+    environment:
+      - PORT=$PORT
+      - DB_HOST=database
+      - DB_PORT=3360
+      - DB_NAME=$DB_NAME
+      - DB_USER=$DB_USER
+      - DB_PASS=$DB_PASS
+      - JWT_SECRET_KEY=$JWT_SECRET_KEY
+      - OTP_SECRET_KEY=$OTP_SECRET_KEY
+      - GMAIL_APP_KEY=$GMAIL_APP_KEY
+      - GMAIL=$GMAIL
+      - CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME
+      - CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY
+      - CLOUDYNARY_API_SECRET=$CLOUDYNARY_API_SECRET
+      - REDIRECT_URL=$REDIRECT_URL
+    expose:
+      - $PORT
+    ports:
+      - $PORT:$PORT
+    command: npm run dev
+    networks : 
+      - mynetwork
+    # stdin_open: true
+    # tty: true
+  database:
+    image: mysql:5.7
+    container_name: mydb
+    command: --default-authentication-plugin=mysql_native_password
+    # restart: always
+    env_file:
+      - .env
+    environment:
+      - MYSQL_DATABASE=$DB_NAME
+      - MYSQL_ROOT_PASSWORD=$DB_PASS
+    volumes:
+      - mysql-db:/var/lib/mysql
+      - ./scripts:/docker-entrypoint-initdb.d
+    ports:
+      - 3360:3306
+    networks : 
+      - mynetwork
+networks:
+  mynetwork:
+    driver: bridge
+volumes:
+  mysql-db:
